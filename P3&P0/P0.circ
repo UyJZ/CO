@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project source="2.7.1" version="1.0">
+This file is intended to be loaded by Logisim (http://www.cburch.com/logisim/).
+<lib desc="#Wiring" name="0"/>
+  <lib desc="#Gates" name="1"/>
+  <lib desc="#Plexers" name="2"/>
+  <lib desc="#Arithmetic" name="3"/>
+  <lib desc="#Memory" name="4"/>
+  <lib desc="#I/O" name="5"/>
+  <lib desc="#Base" name="6">
+    <tool name="Text Tool">
+      <a name="text" val=""/>
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="center"/>
+      <a name="valign" val="base"/>
+    </tool>
+  </lib>
+  <main name="main"/>
+  <options>
+    <a name="gateUndefined" val="ignore"/>
+    <a name="simlimit" val="1000"/>
+    <a name="simrand" val="0"/>
+  </options>
+  <mappings>
+    <tool lib="6" map="Button2" name="Menu Tool"/>
+    <tool lib="6" map="Button3" name="Menu Tool"/>
+    <tool lib="6" map="Ctrl Button1" name="Menu Tool"/>
+  </mappings>
+  <toolbar>
+    <tool lib="6" name="Poke Tool"/>
+    <tool lib="6" name="Edit Tool"/>
+    <tool lib="6" name="Text Tool">
+      <a name="text" val=""/>
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="center"/>
+      <a name="valign" val="base"/>
+    </tool>
+    <sep/>
+    <tool lib="0" name="Pin">
+      <a name="width" val="2"/>
+      <a name="tristate" val="false"/>
+    </tool>
+    <tool lib="0" name="Pin">
+      <a name="facing" val="west"/>
+      <a name="output" val="true"/>
+      <a name="labelloc" val="east"/>
+    </tool>
+    <tool lib="1" name="NOT Gate"/>
+    <tool lib="1" name="AND Gate"/>
+    <tool lib="1" name="OR Gate"/>
+  </toolbar>
+  <circuit name="main">
+    <a name="circuit" val="main"/>
+    <a name="clabel" val=""/>
+    <a name="clabelup" val="east"/>
+    <a name="clabelfont" val="SansSerif plain 12"/>
+    <wire from="(70,420)" to="(130,420)"/>
+    <wire from="(70,500)" to="(130,500)"/>
+    <wire from="(70,680)" to="(130,680)"/>
+    <wire from="(70,760)" to="(130,760)"/>
+    <wire from="(70,420)" to="(70,500)"/>
+    <wire from="(70,680)" to="(70,760)"/>
+    <wire from="(50,420)" to="(70,420)"/>
+    <wire from="(110,400)" to="(130,400)"/>
+    <wire from="(120,230)" to="(140,230)"/>
+    <wire from="(120,270)" to="(140,270)"/>
+    <wire from="(110,480)" to="(130,480)"/>
+    <wire from="(110,660)" to="(130,660)"/>
+    <wire from="(50,680)" to="(70,680)"/>
+    <wire from="(130,80)" to="(150,80)"/>
+    <wire from="(130,140)" to="(150,140)"/>
+    <wire from="(110,740)" to="(130,740)"/>
+    <wire from="(170,540)" to="(240,540)"/>
+    <wire from="(170,620)" to="(240,620)"/>
+    <wire from="(170,800)" to="(240,800)"/>
+    <wire from="(170,880)" to="(240,880)"/>
+    <wire from="(280,410)" to="(350,410)"/>
+    <wire from="(280,490)" to="(350,490)"/>
+    <wire from="(280,670)" to="(350,670)"/>
+    <wire from="(280,750)" to="(350,750)"/>
+    <wire from="(70,550)" to="(130,550)"/>
+    <wire from="(70,630)" to="(130,630)"/>
+    <wire from="(70,810)" to="(130,810)"/>
+    <wire from="(70,890)" to="(130,890)"/>
+    <wire from="(70,550)" to="(70,630)"/>
+    <wire from="(70,810)" to="(70,890)"/>
+    <wire from="(150,340)" to="(180,340)"/>
+    <wire from="(90,350)" to="(110,350)"/>
+    <wire from="(50,550)" to="(70,550)"/>
+    <wire from="(110,530)" to="(130,530)"/>
+    <wire from="(110,610)" to="(130,610)"/>
+    <wire from="(50,810)" to="(70,810)"/>
+    <wire from="(130,110)" to="(150,110)"/>
+    <wire from="(130,170)" to="(150,170)"/>
+    <wire from="(110,790)" to="(130,790)"/>
+    <wire from="(110,870)" to="(130,870)"/>
+    <wire from="(100,330)" to="(110,330)"/>
+    <wire from="(170,410)" to="(240,410)"/>
+    <wire from="(170,490)" to="(240,490)"/>
+    <wire from="(170,670)" to="(240,670)"/>
+    <wire from="(170,750)" to="(240,750)"/>
+    <wire from="(280,540)" to="(350,540)"/>
+    <wire from="(280,620)" to="(350,620)"/>
+    <wire from="(280,800)" to="(350,800)"/>
+    <wire from="(280,880)" to="(350,880)"/>
+    <comp lib="0" loc="(110,660)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(90,350)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="2"/>
+      <a name="label" val="leader"/>
+    </comp>
+    <comp lib="0" loc="(280,410)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(280,490)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="3" loc="(170,540)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(280,670)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(180,340)" name="Tunnel">
+      <a name="label" val="是否一票否决"/>
+    </comp>
+    <comp lib="0" loc="(110,400)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(350,410)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="disagree1"/>
+    </comp>
+    <comp lib="0" loc="(130,140)" name="Pin">
+      <a name="width" val="2"/>
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp lib="0" loc="(150,170)" name="Tunnel">
+      <a name="width" val="2"/>
+      <a name="label" val="player3"/>
+    </comp>
+    <comp lib="0" loc="(110,610)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x2"/>
+    </comp>
+    <comp lib="0" loc="(350,880)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="agreeleader"/>
+    </comp>
+    <comp lib="0" loc="(280,540)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(50,680)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="2"/>
+      <a name="label" val="player3"/>
+    </comp>
+    <comp lib="0" loc="(110,740)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x2"/>
+    </comp>
+    <comp lib="0" loc="(280,880)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(100,330)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x2"/>
+    </comp>
+    <comp lib="0" loc="(350,750)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="agree3"/>
+    </comp>
+    <comp lib="0" loc="(120,270)" name="Constant">
+      <a name="width" val="3"/>
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(110,870)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x3"/>
+    </comp>
+    <comp lib="3" loc="(170,800)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(130,110)" name="Pin">
+      <a name="width" val="2"/>
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp lib="0" loc="(130,170)" name="Pin">
+      <a name="width" val="2"/>
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp lib="0" loc="(110,530)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(50,550)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="2"/>
+      <a name="label" val="player2"/>
+    </comp>
+    <comp lib="3" loc="(150,340)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(50,420)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="2"/>
+      <a name="label" val="player1"/>
+    </comp>
+    <comp lib="0" loc="(120,230)" name="Constant">
+      <a name="width" val="3"/>
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(140,230)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="numofagree"/>
+    </comp>
+    <comp lib="0" loc="(280,750)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(140,270)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="numofdisagree"/>
+    </comp>
+    <comp lib="3" loc="(170,620)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="3" loc="(170,670)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(280,620)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(350,620)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="agree2"/>
+    </comp>
+    <comp lib="0" loc="(110,480)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x2"/>
+    </comp>
+    <comp lib="3" loc="(170,490)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(150,80)" name="Tunnel">
+      <a name="width" val="2"/>
+      <a name="label" val="leader"/>
+    </comp>
+    <comp lib="0" loc="(150,110)" name="Tunnel">
+      <a name="width" val="2"/>
+      <a name="label" val="player1"/>
+    </comp>
+    <comp lib="0" loc="(350,670)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="disagree3"/>
+    </comp>
+    <comp lib="0" loc="(50,810)" name="Tunnel">
+      <a name="facing" val="east"/>
+      <a name="width" val="2"/>
+      <a name="label" val="leader"/>
+    </comp>
+    <comp lib="3" loc="(170,410)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="3" loc="(170,750)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(350,490)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="agree1"/>
+    </comp>
+    <comp lib="0" loc="(280,800)" name="Bit Extender">
+      <a name="in_width" val="1"/>
+      <a name="out_width" val="3"/>
+    </comp>
+    <comp lib="0" loc="(130,80)" name="Pin">
+      <a name="width" val="2"/>
+      <a name="tristate" val="false"/>
+    </comp>
+    <comp lib="0" loc="(350,800)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="disagreeleader"/>
+    </comp>
+    <comp lib="0" loc="(150,140)" name="Tunnel">
+      <a name="width" val="2"/>
+      <a name="label" val="player2"/>
+    </comp>
+    <comp lib="3" loc="(170,880)" name="Comparator">
+      <a name="width" val="2"/>
+      <a name="mode" val="unsigned"/>
+    </comp>
+    <comp lib="0" loc="(350,540)" name="Tunnel">
+      <a name="width" val="3"/>
+      <a name="label" val="disagree2"/>
+    </comp>
+    <comp lib="0" loc="(110,790)" name="Constant">
+      <a name="width" val="2"/>
+      <a name="value" val="0x0"/>
+    </comp>
+  </circuit>
+</project>
