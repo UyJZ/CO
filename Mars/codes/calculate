@@ -1,0 +1,100 @@
+.data
+s:.space 100
+a:.space 400
+str: .space 40
+str_space:.asciiz " "
+str_enter:.asciiz "\n"
+.macro RI(%a) #read in int
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro PI(%a) # print an int
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro RS(%a) # read in a char
+    li $v0,8
+    li $a1,3
+    la $a0,%a
+    syscall
+.end_macro
+.macro PC(%a) # print a char
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,11
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro pspace # print a space
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_space
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro penter # print a enter
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_enter
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.text
+    RI($s0) # s0 == number of char
+    li $t0,0 # t0 = i
+    li $s1,0 # number of chars == s1
+    loop1:
+        beq $t0,$s0,loop1_end
+        RS(str)
+        li $t1,0
+        lb $t2,str($0)
+        loop_j:
+            beq $t1,$s1,loop_j_end
+            lb $t3,s($t1)
+            bne $t3,$t2,end_if
+                sll $t5,$t1,2
+                lw $t4,a($t5)
+                addi $t4,$t4,1
+                sw $t4,a($t5)
+                j loop_j_end
+            end_if:
+            addi $t1,$t1,1
+            j loop_j
+        loop_j_end:
+        bne $t1,$s1,end_if2
+            sb $t2,s($t1)
+            li $t7,1
+            sll $t6,$t1,2
+            sw $t7,a($t6)
+            addi $s1,$s1,1
+        end_if2:
+        addi $t0,$t0,1
+        j loop1
+    loop1_end:
+    li $t0,0
+    loop2:
+        beq $t0,$s1,loop2_end
+        lb $t2,s($t0)
+        sll $t1,$t0,2
+        lw $t3,a($t1)
+        PC($t2)
+        pspace
+        PI($t3)
+        penter
+        addi $t0,$t0,1
+        j loop2
+    loop2_end:
+    li $v0,10
+    syscall

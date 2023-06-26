@@ -1,0 +1,7 @@
+A:
+ori $t0, $t0, 1
+beq $t0, $0, A
+add $t1, $t0, $t0
+beq $t1, $0, A
+sub $t2, $t1, $t0
+beq $0, $t2, A

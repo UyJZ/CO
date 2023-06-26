@@ -1,0 +1,80 @@
+.data
+num: .word 8,4,6,3,8,4,7,4,1,2,0,0,0
+ans: .space 44
+enter: .asciiz "\n"
+space: .asciiz " "
+.macro RI(%a)
+    li $v0,5
+    syscall
+    addu %a,$v0,$0
+.end_macro
+.macro penter
+    li $v0,4
+    la $a0,enter
+    syscall
+.end_macro
+.macro pspace
+    li $v0,4
+    la $a0,space
+    syscall
+.end_macro
+.macro PI(%a)
+    addu $a0,$0,%a
+    li $v0,1
+    syscall
+.end_macro
+.text
+    RI($s0)
+    li $t0,1
+    li $s1,1
+    loop1:
+        bgt $t0,$s0,loop_end
+        multu $s1,$t0
+        mflo $t1
+        li $t4,1
+        bgt $t0,$t4,if
+        li $s2,1
+        j e
+        if:
+        addu $s2,$s2,$t1
+        move $s1,$t1
+        e:
+        addi $t0,$t0,1
+        j loop1
+    loop_end:
+    bltz $s2,p2
+    PI($s2) 
+    li $v0,10
+    syscall
+    p2:
+    sll $s2,$s2,1
+    srl $s2,$s2,1
+    li $t0,0
+    li $t1,10
+    li $t5,0
+    loop2:
+        beq $s2,$0,loop2_end
+        div $s2,$t1
+        mflo $s2
+        mfhi $t3
+        sll $t4,$t0,2
+        add $t3,$t5,$t3
+        lw $t6,num($t4)
+        add $t3,$t3,$t6
+        div $t3,$t1
+        mflo $t5
+        mfhi $t3
+        sw $t3,ans($t4)
+        addi $t0,$t0,1
+        j loop2
+    loop2_end:
+    loop3:
+        beq $t0,$0,end1
+        addi $t0,$t0,-1
+        sll $t1,$t0,2
+        lw $t2,ans($t1)
+        PI($t2)
+        j loop3
+    end1:
+    li $v0,10
+    syscall

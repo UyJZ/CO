@@ -1,0 +1,142 @@
+.data
+arr: .space 400
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro PI(%a)
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro Pspace
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_space
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro Penter
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_enter
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro push(%a)
+    sw %a,($sp)
+    addi $sp,$sp,-4
+.end_macro
+.macro pop(%a)
+    addi $sp,$sp,4
+    lw %a,($sp)
+.end_macro
+.text
+    RI($s0)
+    li $t0,0
+    loop1:
+        beq $t0,$s0,loop1_end
+        RI($t1)
+        sll $t2,$t0,2
+        sw $t1,arr($t2)
+        addi $t0,$t0,1
+        j loop1
+    loop1_end:
+    li $a0,0
+    move $a1,$s0
+    addi $a1,$a1,-1
+    jal quicksort
+    li $t0,0
+    loop2:
+        beq $t0,$s0,loop2_end
+        sll $t1,$t0,2
+        lw $t2,arr($t1)
+        PI($t2)
+        Penter
+        addi $t0,$t0,1
+        j loop2
+    loop2_end:
+    li $v0,10
+    syscall
+    
+getpivot:
+    push($ra)
+    move $t0,$a0
+    move $t1,$a1
+    sll $t2,$t0,2
+    lw $t2,arr($t2) # $t2 == pivot
+    while: #while(left < right)
+        bge $t0,$t1,while_end
+        while1:
+            sll $t3,$t1,2
+            lw $t3,arr($t3) #arr[right]
+            bge $t0,$t1,while1_end #left >= right while1end
+            blt $t3,$t2,while1_end #arr[right] < pivot while1end
+            addi $t1,$t1,-1 #right -- 
+            j while1
+        while1_end:
+        sll $t3,$t1,2
+        lw $t3,arr($t3)
+        sll $t4,$t0,2
+        sw $t3,arr($t4)
+        while2:
+            bge $t0,$t1,while2_end
+            sll $t3,$t0,2
+            lw $t4,arr($t3)
+            bge $t4,$t2,while2_end
+            addi $t0,$t0,1
+            j while2
+        while2_end:
+        sll $t3,$t0,2
+        lw $t3,arr($t3)
+        sll $t4,$t1,2
+        PI($t3)
+        Penter
+        sw $t3,arr($t4)
+        j while
+    while_end:
+    sll $t3,$t1,2
+    sw $t2,arr($t3)
+    pop($ra)
+    move $v0,$t0
+    jr $ra
+    
+quicksort:
+    push($ra)
+    bge $a0,$a1,end
+        push($a0)
+        push($a1)
+        jal getpivot
+        move $t1,$v0
+        pop($a1)
+        pop($a0)
+        push($t1)
+        push($a0)
+        push($a1)
+        subi $a1,$t1,1
+        jal quicksort
+        pop($a1)
+        pop($a0)
+        pop($t1)
+        push($t1)
+        push($a0)
+        push($a1)
+        addi $a0,$t1,1
+        jal quicksort
+        pop($a1)
+        pop($a0)
+        pop($t1)
+    end:
+    pop($ra)
+    jr $ra

@@ -1,0 +1,172 @@
+.data
+str1: .asciiz "move disk "
+str2: .asciiz " from "
+str3: .asciiz " to "
+enter: .asciiz "\n"
+.macro print1
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    la $a0,str1
+    li $v0,4
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro print2
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    la $a0,str2
+    li $v0,4
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro print3
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    la $a0,str3
+    li $v0,4
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro penter
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    la $a0,enter
+    li $v0,4
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro PI(%a)
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro PC(%a)
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,11
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro push(%a)
+    sw %a,($sp)
+    addi $sp,$sp,-4
+.end_macro
+.macro pop(%a)
+    addi $sp,$sp,4
+    lw %a,($sp)
+.end_macro
+.text
+    RI($s0)
+    move $a0,$s0
+    li $a1,'A'
+    li $a2,'B'
+    li $a3,'C'
+    jal hanoi
+    li $v0,10
+    syscall
+    
+move:
+    push($ra)
+    print1
+    PI($a0)
+    print2
+    PC($a1)
+    print3
+    PC($a2)
+    penter
+    pop($ra)
+    jr $ra
+hanoi:
+    push($ra)
+    bnez $a0,else
+    jal move
+    push($a0)
+    push($a1)
+    push($a2)
+    push($a3)
+    move $t0,$a2
+    move $t1,$a3
+    move $a1,$t0
+    move $a2,$t1
+    jal move
+    pop($a3)
+    pop($a2)
+    pop($a1)
+    pop($a0)
+    pop($ra)
+    jr $ra
+else:
+    addi $t0,$a0,-1
+    push($a0)
+    push($a1)
+    push($a2)
+    push($a3)
+    move $a0,$t0
+    jal hanoi
+    pop($a3)
+    pop($a2)
+    pop($a1)
+    pop($a0)
+    jal move
+    push($a0)
+    push($a1)
+    push($a2)
+    push($a3)
+    addi $t0,$a0,-1
+    move $t1,$a3
+    move $t2,$a2
+    move $t3,$a1
+    move $a0,$t0
+    move $a1,$t1
+    move $a2,$t2
+    move $a3,$t3
+    jal hanoi
+    pop($a3)
+    pop($a2)
+    pop($a1)
+    pop($a0)
+    push($a0)
+    push($a1)
+    push($a2)
+    push($a3)
+    move $t0,$a0
+    move $t1,$a2
+    move $t2,$a3
+    move $a0,$t0
+    move $a1,$t1
+    move $a2,$t2
+    jal move
+    pop($a3)
+    pop($a2)
+    pop($a1)
+    pop($a0)
+    push($a0)
+    push($a1)
+    push($a2)
+    push($a3)
+    addi $t0,$a0,-1
+    move $a0,$t0
+    jal hanoi
+    pop($a3)
+    pop($a2)
+    pop($a1)
+    pop($a0)
+    pop($ra)
+    jr $ra
+    
+    

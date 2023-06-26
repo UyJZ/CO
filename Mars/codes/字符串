@@ -1,0 +1,18 @@
+.data
+str: .space 400
+.macro RS(%a)
+    la $a0,%a
+    li $a1,10
+    li $v0,8
+    syscall
+.end_macro
+.macro PS(%a)
+    li $v0,4
+    la $a0,%a
+    syscall
+.end_macro
+.text
+    RS(str)
+    PS(str)
+    li $v0,10
+    syscall

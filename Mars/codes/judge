@@ -1,0 +1,54 @@
+.data
+str: .space 21
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+
+.macro RI_int(%n)
+    li $v0,5
+    syscall
+    move %n,$v0
+.end_macro 
+.macro RI_char(%n)
+    li $v0,12
+    syscall
+    move %n,$v0
+.end_macro
+
+.macro PI(%n)
+    li $v0,1
+    move $a0,%n
+    syscall
+.end_macro
+
+.text
+RI_int($s0)#s0 is the number of char and s1 is the result
+li $s2,0
+li $s1,1
+for_i_begin:
+    beq $s2,$s0,for_i_end
+    RI_char($s3)
+    sb $s3,str($s2)
+    addi $s2,$s2,1
+    j for_i_begin
+for_i_end:
+    li $s2,0
+    move $s3,$s0
+    subi $s3,$s3,1
+    for_j_begin:
+        beq $s2,$s0,for_j_end
+        lb $t0,str($s2)
+        lb $t1,str($s3)
+        beq $t0,$t1,if2
+        if1:
+            li $s1,0
+            j end_if
+        if2:
+            andi $s1,$s1,1
+        end_if:
+        addi $s2,$s2,1
+        addi $s3,$s3,-1
+        j for_j_begin
+    for_j_end:
+    PI($s1)
+    li $v0,10
+    syscall

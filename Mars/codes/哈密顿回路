@@ -1,0 +1,131 @@
+.data
+G: .space  256 #数组G[ 8 ] [ 8 ]     
+book:.space 32      #数组 book [ 8 ]
+str_enter:  .asciiz "\n" 
+str_space:  .asciiz " "
+
+.macro INDEX(%ans, %i, %j, %rank) # %ans是一行长度位%rank的二维数组元素（i，j）相对初始地址的位置
+    multu %i, %rank
+    mflo %ans
+    add %ans,%ans,%j
+    sll %ans, %ans, 2
+.end_macro
+.macro RI(%n)#读入一个寄存器的值
+    li $v0,5
+    syscall
+    move %n, $v0
+.end_macro
+
+.macro PI(%n)#输出一个寄存器的值
+    li $v0, 1
+    move $a0, %n
+    syscall
+.end_macro
+
+.macro PSPACE#打印一个空格
+    la $a0, str_space
+    li $v0, 4
+    syscall
+.end_macro
+
+.macro PENTER#打印一个回车
+    la $a0, str_enter
+    li $v0, 4
+    syscall
+.end_macro
+
+.macro END#终止程序
+    li $v0,10
+    syscall
+.end_macro 
+
+.text
+main:#main函数
+RI($s0)# $s0是n的值,read in $s0
+RI($s1)#$s1是m的值,$s2是ans的值,表示是否存在哈密顿回路
+li $t0,0#循环变量i
+for_i_begin:
+    beq $t0,$s1,for_i_end#当i == m时结束循环
+    RI($t1)#读入变量x,y
+    RI($t2)
+    addi $t1,$t1,-1
+    addi $t2,$t2,-1
+    INDEX($t3,$t1,$t2,$s0)#$t3是G[x-1] [y-1]相对于G[0][0]的位置
+    addi $t4,$0,1
+    sw $t4,G($t3)#G[$t1][$t2] = 1
+    INDEX($t3,$t2,$t1,$s0)
+    sw $t4,G($t3)#G[$t2][$t1] = 1
+    addi $t0,$t0,1#循环变量i++
+    j for_i_begin
+for_i_end:
+li $t0,0 #将book[ i ]赋值为0
+for_i1_begin:
+    beq $t0,$s0,for_i1_end #将book[i]赋值成0
+    INDEX($t1,$0,$t0,$s0)
+    sw $0,book($t1)
+    addi $t0,$t0,1
+    j for_i1_begin
+for_i1_end:
+move $a0,$0#进入函数dfs(0)
+jal dfs
+PI($s2)
+END
+
+
+
+
+
+dfs:#无论如何都要保护$ra
+sw $ra,($sp)
+subi $sp,$sp,4
+INDEX($t0,$0,$a0,$s0) #$t0 为 book[x]相对于book[0]的位置
+li $t1,1
+sw $t1,book($t0)##将book[ x ]赋值为1
+li $t2,1#$t2 == flag
+li $t3,0#循环变量i
+in_i1_begin:##将flag 进行循环 与运算赋值，判断是否经过了所有的点
+    beq $t3,$s0,in_i1_end
+   INDEX($t4,$0,$t3,$s0)
+    lw $t5,book($t4)#取$t5 = book[i]
+    and $t2,$t2,$t5#flag = flag & book[i]
+    addi $t3,$t3,1#i++
+    j in_i1_begin
+in_i1_end:
+INDEX($t3,$a0,$0,$s0)##判断是否拥有一条哈密顿回路
+lw $t4,G($t3) #取$t4为 G[x][0]
+beq $t4,$0,end1#若G[x][0] = 0 跳转
+beq $t2,$0,end1#若flag = 0跳转
+li $s2,1#将ans赋值为1
+addi $sp,$sp,4
+lw $ra,($sp)
+jr $ra#直接return
+end1:
+li $t0,0#循环变量i
+in_i2_begin:
+    beq $t0,$s0,in_i2_end
+    INDEX($t3,$0,$t0,$s0)#取book[i]相对于book[0]的位置
+    INDEX($t2,$a0,$t0,$s0)#取G[x][i]相对于G[0][0]的位置
+    lw $t1,book($t3)
+    lw $t4,G($t2)
+    li $t5,1
+    beq $t1,$t5,end2
+    beq $t4,$0,end2
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    sw $t0,($sp)
+    addi $sp,$sp,-4
+    move $a0,$t0
+    jal dfs
+    addi $sp,$sp,4
+    lw $t0,($sp)
+    addi $sp,$sp,4
+    lw $a0,($sp)
+    end2:
+    addi $t0,$t0,1
+    j in_i2_begin
+in_i2_end:
+    INDEX($t0,$0,$a0,$s0)
+    sw $0,book($t0)
+    addi $sp,$sp,4
+    lw $ra,($sp)
+    jr $ra

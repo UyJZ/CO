@@ -1,0 +1,13 @@
+.text
+li $t1 0
+li $t2 500
+for_begin:
+slt $t3 $t1 $t2
+beq $t3 $0 for_end
+addi $t1 $t1 1
+j for_begin
+for_end:
+li $v0 1
+syscall
+li $v0 10
+syscall

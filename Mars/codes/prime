@@ -1,0 +1,142 @@
+.data
+p:.space 8000
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro P1
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    li $a0,1
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro P0
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    li $a0,0
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+.macro push(%a)
+    sw %a,($sp)
+    addi $sp,$sp,-4
+.end_macro
+.macro pop(%a)
+    addi $sp,$sp,4
+    lw %a,($sp)
+.end_macro
+.text
+    RI($s0)
+    li $s1,2 #s1 = step
+    li $s2,3 #s2 == num
+    li $t0,0
+    sll $t1,$t0,2
+    li $t2,2
+    div $s0,$t2
+    mfhi $t3
+    bnez $t3,t1
+    beq $s0,$t2,t11
+    syscall
+    P0
+    li $v0,10
+    syscall
+    t11:
+    P1
+    li $v0,10
+    syscall
+    t1:
+    sw $t2,p($t1)
+    addi $t0,$t0,1
+    sll $t1,$t0,2
+    li $t2,3
+    div $s0,$t2
+    mfhi $t3
+    bnez $t3,t2
+    beq $s0,$t2,t21
+    syscall
+    P0
+    li $v0,10
+    syscall
+    t21:
+    P1
+    li $v0,10
+    syscall
+    t2:
+    sw $t2,p($t1)
+    addi $t0,$t0,1
+    sll $t1,$t0,2
+    li $t2,5
+    div $s0,$t2
+    mfhi $t3
+    bnez $t3,t3
+    beq $s0,$t2,t31
+    syscall
+    P0
+    li $v0,10
+    syscall
+    t31:
+    P1
+    li $v0,10
+    syscall
+    t3:
+    sw $t2,p($t1)
+    li $t0,7
+    div $s0,$t2
+    mflo $s4
+    addi $s4,$s4,1
+    li $s4,500
+    loop1:
+        bgt $t0,$s4,loop1_end
+        li $t2,1 #t2 == flag
+        li $t1,0
+        loop2:
+            beq $t1,$s2,loop2_end
+            sll $t3,$t1,2
+            lw $t4,p($t3)
+            div $t0,$t4
+            mfhi $t5
+            bnez $t5,if1
+            li $t2,0
+            j loop2_end
+            if1:
+            addi $t1,$t1,1
+            j loop2
+        loop2_end:
+        beqz $t2,if2
+            sll $t3,$s2,2
+            sw $t0,p($t3)
+            addi $s2,$s2,1
+        if2:
+            li $t1,6
+            sub $s1,$t1,$s1
+            add $t0,$t0,$s1
+        j loop1
+    loop1_end:
+    li $t0,0
+    loop3:
+        sll $t1,$t0,2
+        lw $t2,p($t1)
+        mult $t2,$t2
+        mflo $t3
+        bgt $t3,$s0,loop3_end
+        div $s0,$t2
+        mfhi $t4
+        bnez $t4,if3
+            P0
+            li $v0,10
+            syscall
+        if3:
+        addi $t0,$t0,1
+        j loop3
+    loop3_end:
+    P1
+    li $v0,10
+    syscall
+        
+    

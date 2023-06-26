@@ -1,0 +1,85 @@
+.data
+array1: .space 400
+array2: .space 400
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro PI(%a)
+    li $v0,1
+    move $a0,%a
+    syscall
+.end_macro
+.macro pspace
+    li $v0,4
+    la $a0,str_space
+    syscall
+.end_macro
+.macro penter
+    li $v0,4
+    la $a0,str_enter
+    syscall
+.end_macro
+.text
+    RI($s0)
+    li $t0,0
+    loop1:
+        beq $t0,$s0,loop1_end
+        RI($t1)
+        sll $t2,$t0,2
+        sw $t1,array1($t2)
+        RI($t1)
+        sw $t1,array2($t2)
+        addi $t0,$t0,1
+        j loop1
+    loop1_end:
+    li $t0,0
+    loop_i:
+        beq $t0,$s0,loop_i_end
+        move $t1,$t0
+        addi $t1,$t1,1
+        loop_j:
+            beq $t1,$s0,loop_j_end
+            sll $t2,$t0,2
+            sll $t3,$t1,2
+            lw $t4,array1($t2) #array1[i]
+            lw $t5,array1($t3) #array1[j]
+            lw $t6,array2($t2) #array2[i]
+            lw $t7,array2($t3) #array2[j]
+            blt $t4,$t5,if1 #array1[i] < array1[j]
+            beq $t4,$t5,if0 #array1[i] == array1[j]
+            j end1
+            if0:
+            blt $t6,$t7,if1 #array2[i] < array2[j]
+            j end1
+            if1:
+            sw $t4,array1($t3) #array1[j] = array1[i]
+            sw $t5,array1($t2)
+            sw $t6,array2($t3)
+            sw $t7,array2($t2)
+            end1:
+            addi $t1,$t1,1
+            j loop_j
+        loop_j_end:
+        addi $t0,$t0,1
+        j loop_i
+    loop_i_end:
+    li $t0,0
+    loop_i2:
+        beq $t0,$s0,loop_i2_end
+        sll $t2,$t0,2
+        lw $t3,array1($t2)
+        lw $t4,array2($t2)
+        PI($t3)
+        pspace
+        PI($t4)
+        penter
+        addi $t0,$t0,1
+        j loop_i2
+    loop_i2_end:
+    li $v0,10
+    syscall
+            

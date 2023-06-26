@@ -1,0 +1,34 @@
+ .text
+  li $v0,5
+  syscall
+  move $a0,$v0
+  addi $t0,$0,400
+  div $a0,$t0
+  mfhi $a1
+  addi $t0,$t0,-400
+  addi $t0,$0,4
+  beq $a1,0,print_1
+  div $a0,$t0
+  mfhi $a2
+  beq $a1,0,print_0
+  j print_2
+print_0:
+  addi $t0,$t0,-4
+  addi $t0,$t0,100
+  div $a0,$t0
+  mfhi $a3
+  bne $a3,0,print_1
+  j print_2
+print_1:
+  li $a0,1
+  li $v0,1
+  syscall
+  j end
+print_2:
+  li $a0,0
+  li $v0,1
+  syscall
+  j end
+end:
+  li $v0,10
+  syscall

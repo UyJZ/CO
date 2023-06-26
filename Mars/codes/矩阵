@@ -1,0 +1,88 @@
+.data
+matrix: .space  10000            
+str_enter:  .asciiz "\n"
+str_space:  .asciiz " "
+
+.macro INDEX(%ans, %i, %j, %rank)
+    multu %i, %rank
+    mflo %ans
+    add %ans,%ans,%j
+    sll %ans, %ans, 2
+.end_macro
+.macro RI(%n)
+    li $v0,5
+    syscall
+    move %n, $v0
+.end_macro
+
+.macro PI(%n)
+    li $v0, 1
+    move $a0, %n
+    syscall
+.end_macro
+
+.macro PSPACE
+    la $a0, str_space
+    li $v0, 4
+    syscall
+.end_macro
+
+.macro PENTER
+    la $a0, str_enter
+    li $v0, 4
+    syscall
+.end_macro
+
+.macro END
+    li $v0,10
+    syscall
+.end_macro 
+
+.text
+RI($s0)#行数
+RI($s1)#列数
+la $t0,($0)#行临时变量
+la $t1,($0)#列临时变量
+in_i_begin:
+    beq $s0,$t0,in_i_end
+    li $t1,0
+    in_j_begin:
+        beq $t1,$s1,in_j_end
+        INDEX($t2,$t0, $t1, $s1)
+        RI($t3)
+        sw $t3,matrix($t2)
+        addi $t1,$t1,1
+        j in_j_begin
+    in_j_end:
+    addi $t0,$t0,1
+    j in_i_begin
+in_i_end:
+
+la $t0,($s0)
+addi $t0,$t0,-1
+out_i_begin:
+    blt $t0,$0,out_i_end
+    la $t1,($s1)
+    addi $t1,$t1,-1
+    out_j_begin:
+        blt $t1,$0,out_j_end
+        INDEX($t3,$t0,$t1,$s1)
+        lw $t4,matrix($t3)
+        beq $t4,$0,step
+        addi $t5,$t0,1
+        PI($t5)
+        PSPACE
+        addi $t6,$t1,1
+        PI($t6)
+        PSPACE
+        PI($t4)
+        PENTER
+        step:
+        addi $t1,$t1,-1
+        j out_j_begin
+    out_j_end:
+        addi $t0,$t0,-1
+        j out_i_begin
+out_i_end:
+END
+        

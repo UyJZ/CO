@@ -1,0 +1,210 @@
+.data
+p: .space 256
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+
+.macro PSPACE
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_space
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro 
+
+.macro PENTER
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,4
+    la $a0,str_enter
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+
+.macro PI(%a)
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0,($sp)
+.end_macro
+
+.macro INDEX(%res,%a,%b,%rank)
+    mult %a,%rank
+    mflo %res
+    add %res,%res,%b
+    sll %res,%res,2
+.end_macro 
+
+.macro legal(%ans,%i,%j)
+    bltz %i,end2
+    bltz %j,end2
+    bge %i,$s0,end2
+    bge %j,$s1,end2
+    li %ans,1
+    j end
+    end2:
+    li %ans,0
+    end:
+.end_macro
+
+.macro push(%a)
+    sw %a,($sp)
+    addi $sp,$sp,-4
+.end_macro
+
+.macro pop(%a)
+    addi $sp,$sp,4
+    lw %a,($sp)
+.end_macro
+
+.text
+    RI($s0)#$s0 == n
+    RI($s1)#$s1 == m
+    li $t0,0
+    loop1_i_begin:
+        beq $t0,$s0,loop1_i_end
+        li $t1,0
+        loop1_j_begin:
+            beq $t1,$s1,loop1_j_end
+            INDEX($t2,$t0,$t1,$s1)
+            RI($t3)
+            sw $t3,p($t2)
+            addi $t1,$t1,1
+            j loop1_j_begin
+        loop1_j_end:
+        addi $t0,$t0,1
+        j loop1_i_begin
+    loop1_i_end:
+    RI($s2)
+    addi $s2,$s2,-1
+    RI($s3)
+    addi $s3,$s3,-1
+    RI($s4)
+    addi $s4,$s4,-1
+    RI($s5)
+    addi $s5,$s5,-1
+    li $s6,0
+    move $a0,$s2
+    move $a1,$s3
+    jal dfs
+    PI($s6)
+    li $v0,10
+    syscall
+    
+dfs:
+    push($ra)
+    INDEX($t0,$a0,$a1,$s1)
+    li $t1,1
+    sw $t1,p($t0)
+    bne $a0,$s4,else
+    bne $a1,$s5,else
+    if:
+        addi $s6,$s6,1
+        pop($ra)
+        jr $ra
+    else:
+        addi $t0,$a0,-1
+        move $t1,$a1
+        legal($t4,$t0,$t1)
+        beqz $t4,else_if1
+        INDEX($t2,$t0,$t1,$s1)
+        lw $t3,p($t2)
+        bnez $t3,else_if1
+        if1:
+            push($a0)
+            push($a1)
+            push($t0)#t0 = a0 - 1
+            push($t1)#t1 = a1
+            move $a0,$t0
+            move $a1,$t1
+            jal dfs
+            pop($t1)
+            pop($t0)
+            pop($a1)
+            pop($a0)
+            INDEX($t2,$t0,$t1,$s1)
+            sw $0,p($t2)#p[x-1][y]=0
+        else_if1:
+            addi $t1,$a1,-1
+            move $t0,$a0
+            legal($t4,$t0,$t1)
+            beqz $t4,else_if2
+            INDEX($t2,$t0,$t1,$s1)
+            lw $t3,p($t2)
+            bnez $t3,else_if2
+            push($a0)
+            push($a1)
+            push($t0)
+            push($t1)
+            move $a0,$t0
+            move $a1,$t1
+            jal dfs
+            pop($t1)
+            pop($t0)
+            pop($a1)
+            pop($a0)
+            INDEX($t2,$t0,$t1,$s1)
+            sw $0,p($t2)#p[x][y-1] = 0
+        else_if2:
+            addi $t1,$a1,+1
+            move $t0,$a0
+            legal($t4,$t0,$t1)
+            beqz $t4,else_if3
+            INDEX($t2,$t0,$t1,$s1)
+            lw $t3,p($t2)
+            bnez $t3,else_if3
+            sw $a0,($sp)
+            addi $sp,$sp,-4
+            sw $a1,($sp)
+            addi $sp,$sp,-4
+            sw $t0,($sp)
+            addi $sp,$sp,-4
+            sw $t1,($sp)
+            addi $sp,$sp,-4
+            move $a0,$t0
+            move $a1,$t1
+            jal dfs
+            addi $sp,$sp,4
+            lw $t1,($sp)
+            addi $sp,$sp,4
+            lw $t0,($sp)
+            addi $sp,$sp,4
+            lw $a1,($sp)
+            addi $sp,$sp,4
+            lw $a0,($sp)
+            INDEX($t2,$t0,$t1,$s1)
+            sw $0,p($t2)
+        else_if3:
+            addi $t0,$a0,+1
+            move $t1,$a1
+            legal($t4,$t0,$t1)
+            beqz $t4,end
+            INDEX($t2,$t0,$t1,$s1)
+            lw $t3,p($t2)
+            bnez $t3,end
+            push($a0)
+            push($a1)
+            push($t0)
+            push($t1)
+            move $a0,$t0
+            move $a1,$t1
+            jal dfs
+            pop($t1)
+            pop($t0)
+            pop($a1)
+            pop($a0)
+            INDEX($t2,$t0,$t1,$s1)
+            sw $0,p($t2)
+        end:
+        pop($ra)
+        jr $ra

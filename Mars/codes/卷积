@@ -1,0 +1,139 @@
+.data 
+f: .space 400
+h: .space 400
+g: .space 400
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro 
+
+.macro PI(%a)
+    move $a0,%a
+    li $v0,1
+    syscall
+.end_macro
+
+.macro INDEX(%res,%a,%b,%rank)
+    mult %a,%rank
+    mflo %res
+    add %res,%res,%b
+    sll %res,%res,2
+.end_macro 
+
+.macro PSPACE
+    li $v0,4
+    la $a0,str_space
+    syscall
+.end_macro 
+
+.macro PENTER
+    li $v0,4
+    la $a0,str_enter
+    syscall
+.end_macro
+.text
+    RI($s0)
+    RI($s1)
+    RI($s2)
+    RI($s3)
+    sub $s4,$s0,$s2
+    addi $s4,$s4,1
+    sub $s5,$s1,$s3
+    addi $s5,$s5,1
+    li $t0,0
+    loop1_i_begin:
+        beq $t0,$s0,loop1_i_end
+        li $t1,0
+        loop1_j_begin:
+            beq $t1,$s1,loop1_j_end
+            RI($t2)
+            INDEX($t3,$t0,$t1,$s1)
+            sw $t2,f($t3)
+            addi $t1,$t1,1
+            j loop1_j_begin
+        loop1_j_end:
+        addi $t0,$t0,1
+        j loop1_i_begin
+    loop1_i_end:
+    li $t0,0
+    loop2_i_begin:
+        beq $t0,$s2,loop2_i_end
+        li $t1,0
+        loop2_j_begin:
+            beq $t1,$s3,loop2_j_end
+            RI($t2)
+            INDEX($t3,$t0,$t1,$s3)
+            sw $t2,h($t3)
+            addi $t1,$t1,1
+            j loop2_j_begin
+        loop2_j_end:
+        addi $t0,$t0,1
+        j loop2_i_begin
+    loop2_i_end:
+    li $t0,0
+    loop3_i_begin:
+        beq $t0,$s4,loop3_i_end
+        li $t1,0
+        loop3_j_begin:
+            beq $t1,$s5,loop3_j_end
+            li $t2,0
+            li $t7,0
+            loop_k_begin:
+                beq $t2,$s2,loop_k_end
+                li $t3,0
+                loop_l_begin:
+                    beq $t3,$s3,loop_l_end
+                    add $t4,$t0,$t2
+                    add $t5,$t1,$t3
+                    INDEX($t6,$t4,$t5,$s1)
+                    lw $t4,f($t6)
+                    #PI($t4)
+                    #PSPACE
+                    INDEX($t6,$t2,$t3,$s3)
+                    lw $t5,h($t6)
+                    #PI($t5)
+                    #PSPACE
+                    mult $t4,$t5
+                    mflo $t4
+                    #PI($t4)
+                    #PENTER
+                    add $t7,$t7,$t4
+                    addi $t3,$t3,1
+                    j loop_l_begin
+                loop_l_end:
+                addi $t2,$t2,1
+                j loop_k_begin
+            loop_k_end:
+            INDEX($t2,$t0,$t1,$s5)
+            sw $t7,g($t2)
+            #PENTER
+            #PI($t7)
+            #PENTER
+            addi $t1,$t1,1
+            j loop3_j_begin
+        loop3_j_end:
+        addi $t0,$t0,1
+        j loop3_i_begin
+    loop3_i_end:
+    li $t0,0
+    loop4_i_begin:
+        beq $t0,$s4,loop4_i_end
+        li $t1,0
+        loop4_j_begin:
+            beq $t1,$s5,loop4_j_end
+            INDEX($t2,$t0,$t1,$s5)
+            lw $t3,g($t2)
+            PI($t3)
+            PSPACE
+            addi $t1,$t1,1
+            j loop4_j_begin
+        loop4_j_end:
+        PENTER
+        addi $t0,$t0,1
+        j loop4_i_begin
+    loop4_i_end:
+    li $v0,10
+    syscall

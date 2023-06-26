@@ -1,0 +1,89 @@
+.data
+symbol: .space 32
+array: .space 32
+str_space: .asciiz " "
+str_enter: .asciiz "\n"
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+.macro push(%a)
+    sw %a,($sp)
+    addi $sp,$sp,-4
+.end_macro
+.macro pop(%a)
+    addi $sp,$sp,4
+    lw %a,($sp)
+.end_macro
+.macro PI(%a)
+    push($a0)
+    li $v0,1
+    move $a0,%a
+    syscall
+    pop($a0)
+.end_macro
+.macro pspace
+    push($a0)
+    li $v0,4
+    la $a0,str_space
+    syscall
+    pop($a0)
+.end_macro
+.macro penter
+    push($a0)
+    li $v0,4
+    la $a0,str_enter
+    syscall
+    pop($a0)
+.end_macro
+.text
+    RI($s0)
+    move $a0,$0
+    jal FullArray
+    li $v0,10
+    syscall
+    
+FullArray:
+    push($ra)
+    blt $a0,$s0,if
+        li $t0,0
+        loop1:
+            beq $t0,$s0,loop1_end
+            sll $t1,$t0,2
+            lw $t2,array($t1)
+            PI($t2)
+            pspace
+            addi $t0,$t0,1
+            j loop1
+        loop1_end:
+        penter
+        pop($ra)
+        jr $ra
+    if:
+        move $t0,$s0
+        addi $t0,$t0,-1
+        loop2:
+            bltz $t0,loop2_end
+            sll $t1,$t0,2
+            lw $t2,symbol($t1)
+            bnez $t2,if2
+            sll $t3,$a0,2
+            addi $t4,$t0,1
+            sw $t4,array($t3)
+            li $t4,1
+            sw $t4,symbol($t1)
+            push($t0)
+            push($a0)
+            addi $a0,$a0,1
+            jal FullArray
+            pop($a0)
+            pop($t0)
+            sll $t1,$t0,2
+            sw $0,symbol($t1)
+            if2:
+            addi $t0,$t0,-1
+            j loop2
+        loop2_end:
+        pop($ra)
+        jr $ra

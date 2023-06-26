@@ -1,0 +1,79 @@
+.data
+ans: .space 4000
+
+.macro INDEX(%a,%i)
+    sll %a,%i,2
+.end_macro
+
+.macro RI(%a)
+    li $v0,5
+    syscall
+    move %a,$v0
+.end_macro
+
+.macro PI(%a)
+    sw $a0,($sp)
+    addi $sp,$sp,-4
+    li $v0,1
+    move $a0,%a
+    syscall
+    addi $sp,$sp,4
+    lw $a0($sp)
+.end_macro
+
+.macro END
+    li $v0,10
+    syscall
+.end_macro
+.text
+    RI($s0) #$s0 == n
+    li $t0,1
+    sw $t0,ans($0)
+    li $s1,1 #num
+    li $s2,0 #temp
+    li $t0,1 #t0 = i
+    loop_i:
+        bgt $t0,$s0,loop_i_end
+        li $t1,0
+        loop_j:
+            beq $t1,$s1,loop_j_end
+            sll $t2,$t1,2
+            lw $t3,ans($t2)
+            mult $t3,$t0
+            mflo $t3
+            add $s2,$s2,$t3
+            li $s3,10
+            div $s2,$s3
+            mfhi $t4
+            sw $t4,ans($t2)
+            mflo $s2
+            addi $t1,$t1,1
+            j loop_j
+        loop_j_end:
+        loop_temp:
+            beqz $s2,loop_temp_end
+            sll $t2,$t1,2
+            div $s2,$s3
+            mfhi $t3
+            sw $t3,ans($t2)
+            mflo $s2
+            addi $t1,$t1,1
+            j loop_temp
+        loop_temp_end:
+        move $s1,$t1
+        addi $t0,$t0,1
+        j loop_i
+    loop_i_end:
+    move $t0,$s1
+    addi $t0,$t0,-1
+    loop_i2:
+        bltz $t0,loop_i2_end
+        sll $t2,$t0,2
+        lw $t1,ans($t2)
+        PI($t1)
+        addi $t0,$t0,-1
+        j loop_i2
+    loop_i2_end:
+    END
+            
+    
