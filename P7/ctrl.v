@@ -25,7 +25,17 @@ module CTRL(
 	 output [2:0] CMP_op,
 	 output [2:0] NPCop,
 	 output [3:0] HILO_type,
-	 output [2:0] DATA_EXT
+	 output [2:0] DATA_EXT,
+	 output calc,
+	 output store,
+	 output load,
+	 output eret,
+	 output syscall,
+	 output CP0WE,
+	 output mtc0,
+	 output RI,
+	 output jump,
+	 output ov
 	 );
 	 wire [5:0]opcode;
 	 wire special,add,sub,jr,jal,j,lb,lh,lw,sb,sh,sw,ori,lui,beq;
@@ -70,14 +80,22 @@ module CTRL(
 	 assign andi = (opcode == 6'b001100);
 	 assign bne = (opcode == 6'b000101);
 	 assign addi = (opcode == 6'b001000);
+	 assign addu = (special && funct == 6'b100001);
+	 assign subu = (special && funct == 6'b100011);
+	 assign eret = (opcode == 6'b010000 && funct == 6'b011000 && instr[25] == 1'b1 && instr[24:6] == 19'b0);
+	 assign syscall = (special && funct == 6'b001100);
+	 assign mfc0 = (opcode == 6'b010000 && rs == 5'b00000);
+	 assign mtc0 = (opcode == 6'b010000 && rs == 5'b00100);
 	 
 /*指令分类*/
-    assign calc_r = (add | sub | slt | sltu | AND | OR);//寄存器运算	 
+    assign calc_r = (add | sub | slt | sltu | AND | OR | addu | subu);//寄存器运算	 
 	 assign calc_i = (andi | ori | lui | addi);//寄存器与立即数运算
+	 assign calc = (calc_r | calc_i);
 	 assign branch = (beq | bne);//条件跳转
 	 assign jump_reg = (jr);//无条件跳转至寄存器
 	 assign jump_imm = (j | jal);
 	 assign jump_link = jal;
+	 assign jump = jump_reg | jump_imm | jump_link;
 	 assign store = (sw | sb | sh);//储存
 	 assign load = (lw | lh | lb);//取值
 	 assign Half = (sh | lh);//半字
@@ -86,6 +104,10 @@ module CTRL(
 	 assign md = (mult | multu | div | divu);
 	 assign mf = (mfhi | mflo );
 	 assign mt = ( mthi | mtlo );
+	 assign ov = (addi | add | sub);
+	 
+	 
+	 assign RI = !(calc | branch | jump | store | load | md | mf | mt | mfc0 | mtc0 | syscall | eret | (instr == 32'b0));
 /*信号集*/	 
 	 
 	 assign DMWr = (store)?2'b10:
@@ -99,7 +121,7 @@ module CTRL(
 	                (jump_imm)?3'b010:
 						 (branch)?3'b001:
 						  3'b000;
-	 assign RF_Wr = (calc_i | calc_r | jump_link | load | mf);//寄存器堆的写使能
+	 assign RF_Wr = (calc_i | calc_r | jump_link | load | mf | mfc0);//寄存器堆的写使能
 	 assign EXT_OP = (beq | load | store | bne | addi);
 	 assign ALU_in2_sel = ( calc_i | store | load );//计算立即数
 	 assign ALUop = (lui)?`ALU_lui:
@@ -108,8 +130,10 @@ module CTRL(
 						 (AND | andi)?`ALU_and:
 						 (slt )?`ALU_slt:
 						 (sltu)?`ALU_sltu:
+						 (addu)?`ALU_addu:
+						 (subu)?`ALU_subu:
 						 `ALU_add;
-	assign rs_T_use = ( calc_r | calc_i | mt | md | store | load)?3'b001:
+	assign rs_T_use = ( calc_r | calc_i | mt | md | store | load | mtc0 | mfc0)?3'b001:
 	                  (branch | jump_reg)?3'b000:
 			 			   3'b011;
 	assign rt_T_use = ( calc_r | md )?3'b001:
@@ -117,18 +141,20 @@ module CTRL(
 	                  ( branch )?3'b000:
 							3'b011;
 	assign E_T_new = ( calc_i | calc_r | mf )?3'b001:
-	                 ( load )?3'b010:
+	                 ( load | mfc0)?3'b010:
 						  3'b000;
-	assign M_T_new = ( load )?3'b001:
+	assign M_T_new = ( load | mfc0)?3'b001:
 	                 3'b000;
+   assign CPO_WE = mtc0;
 	
 	assign WDsel = (calc_r | calc_i)?3'b001:
 	               (load)?3'b010:
 						(jal)?3'b011:
 						(mf)?3'b100:
+						(mfc0)?3'b101:
 						3'b00;
 	assign RFDst = (calc_r | mf)?rd:
-	               (load | calc_i )?rt:
+	               (load | calc_i | mfc0)?rt:
 						( jal )?5'd31:
 						5'd0;
 	assign HILO_type = (mult)?4'b0000:
@@ -143,6 +169,8 @@ module CTRL(
 	assign DATA_EXT = (lh)?3'b100:
 	                  (lb)?3'b010:
 							3'b000;
+	assign CP0WE = mtc0;
+	
 	assign CMP_op = (beq)?3'b000:
 						 (bne)?3'b001:
 						 3'bzzz;

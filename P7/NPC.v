@@ -2,6 +2,7 @@
 module NPC(
     input [31:0] F_PC,
     input [31:0] D_PC,
+	 input [31:0] EPC,
     input [2:0] NPCop,
     input [31:0] ra,
     input [25:0] imm26,
@@ -22,6 +23,9 @@ module NPC(
 				end
 				3'b011:begin
 				    NPC <= ra;
+				end
+				3'b100:begin
+				    NPC <= EPC + 4;
 				end
 		  endcase
 		  

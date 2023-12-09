@@ -23,14 +23,15 @@ module PC(
     input [31:0] npc,
     input clk,
     input reset,
-	 input WE
+	 input WE,
+	 input Req
 	 );
 	 always@(posedge clk)begin
 	     if(reset)begin
 		      pc <= 32'h0000_3000;
 		  end
-		  else if(WE)begin
-		      pc <= npc;
+		  else if(WE | Req)begin
+		      pc <= Req?32'h0000_4180:npc;
 		  end
 	 end
 

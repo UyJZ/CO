@@ -1,32 +1,31 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    00:04:57 11/14/2022 
-// Design Name: 
-// Module Name:    data_ext 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
+`include "const.v"
 module data_ext(
+    input load,
+    input [31:0] M_ALU_out,
+	 input M_AdEL_add,
     input [1:0] A,
 	 input [31:0] Din,
 	 input [2:0] Op,
-	 output reg [31:0] Dout
+	 input [31:0] PC_M,
+	 output reg [31:0] Dout,
+	 output M_AdEL
 	 );
 	 wire sign_byte = Din[A*8+7];
 	 wire sign_half = Din[A[1]*16+15];
 	 wire [31:0] a ={16*{sign_half},Din[31:16]};
+	 assign flag = (M_ALU_out >= `StartInt && M_ALU_out <= `EndInt);
+	 
+	 assign error1 = (Op == 3'b000 && (|M_ALU_out[1:0]))|
+	                 (Op == 3'b100 && (M_ALU_out[0]));
+	 assign error2 = !((M_ALU_out >= `StartAddrDM && M_ALU_out <= `EndAddrDM)|
+	                   (M_ALU_out >= `StartAddrTC1 && M_ALU_out <= `EndAddrTC1)| 
+							 (M_ALU_out >= `StartAddrTC2 && M_ALU_out <= `EndAddrTC2)|
+							 (M_ALU_out >= `StartInt && M_ALU_out <= `EndInt));
+	 assign error3 = (Op != 3'b000 && M_ALU_out >= `StartAddrTC1 && !error2);
+	 
+	 assign M_AdEL = load & (error1 | error2 | error3 | M_AdEL_add);
+	 
 	 always@(*)begin
 	     case(Op)
 		      3'b000:begin

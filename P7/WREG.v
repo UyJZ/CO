@@ -1,26 +1,8 @@
 `timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date:    14:17:42 11/06/2022 
-// Design Name: 
-// Module Name:    WREG 
-// Project Name: 
-// Target Devices: 
-// Tool versions: 
-// Description: 
-//
-// Dependencies: 
-//
-// Revision: 
-// Revision 0.01 - File Created
-// Additional Comments: 
-//
-//////////////////////////////////////////////////////////////////////////////////
 module WREG(
     input clk,
 	 input reset,
+	 input Req,
 	 input WE,
     input [31:0] instr_M,
 	 input [31:0] M_ALU_out,
@@ -33,16 +15,19 @@ module WREG(
 	 output reg[31:0] W_ALU_out,
 	 output reg[31:0] W_DM_out,
 	 output reg[31:0] W_RT,
-	 output reg[31:0] PC_W
+	 output reg[31:0] PC_W,
+	 input [31:0] M_CP0_out,
+	 output reg [31:0] W_CP0_out
 	 );
 	 
 	 always@(posedge clk)begin
-	     if(reset)begin
+	     W_CP0_out <= M_CP0_out;
+		  if(reset || Req)begin
 		      instr_W <= 32'h0000_0000;
 	         W_ALU_out <= 0;
 				W_DM_out <= 0;
 				W_RT <= 0;
-				PC_W <= 32'h0000_3000;
+				PC_W <= Req?32'h0000_4180:32'h0000_3000;
 				W_HILO_out <= 32'h0;
 		  end
 		  else if(WE)begin

@@ -5,6 +5,7 @@ module IFU(
     input clk,
     input reset,
 	 input WE,
+	 input Req,
 	 output [31:0] instr
     );
     reg [31:0] ROM [1023:0];
@@ -16,7 +17,7 @@ module IFU(
 	     if(reset)begin
 		      pc <= 32'h0000_3000;
 		  end
-		  else if(WE)begin
+		  else if(WE || Req)begin
 		      pc <= npc;
 		  end
 	 end

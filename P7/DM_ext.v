@@ -1,13 +1,32 @@
 `timescale 1ns / 1ps
 `include "const.v"
 module DM_ext(
-    input [31:0] M_ALU_out,
+    input [31:0] PC_M,
+	 input store,
+	 input Req,
+    input M_AdES_add,
+	 input [31:0] M_ALU_out,
 	 input [31:0] in,
 	 input [1:0] DMWr,
 	 input [1:0] DMSel,
 	 output reg [31:0] out,
-	 output reg [31:0] m_data_byteen
+	 output reg [3:0] m_data_byteen,
+	 output M_AdES
 	 );
+	 
+	 assign error1 = (DMSel == `Word && (|M_ALU_out[1:0]))|
+	                 (DMSel == `Half && (M_ALU_out[0]));
+	 assign error2 = !((M_ALU_out >= `StartAddrDM && M_ALU_out <= `EndAddrDM)|
+	                   (M_ALU_out >= `StartAddrTC1 && M_ALU_out <= `EndAddrTC1 - 4)| 
+							 (M_ALU_out >= `StartAddrTC2 && M_ALU_out <= `EndAddrTC2 - 4)|
+							 (M_ALU_out >= `StartInt && M_ALU_out <= `EndInt));
+	 assign error3 = (DMSel != `Word && M_ALU_out >= `StartAddrTC1 && !error2);
+/*	 assign error3 = (PC_M >= 32'h0000_4180)?((M_ALU_out >= `StartAddrTC1 && M_ALU_out <= `EndAddrTC1)
+	                                         |(M_ALU_out >= `StartAddrTC2 && M_ALU_out <= `EndAddrTC2)):
+	                                          (M_ALU_out >= `StartAddrTC1);*/
+	 
+	 assign M_AdES = store & (error1 | error2 | error3 | M_AdES_add);
+	 
 	 always@(*)begin
 	     case(DMSel)
 		      `Word:begin
@@ -43,7 +62,10 @@ module DM_ext(
 	 end
 	 
 	 always@(*)begin
-	     if(DMWr == 2'b10)begin
+	     if(M_AdES | Req)begin
+		      m_data_byteen <= 4'b0000;
+		  end
+		  else if(DMWr == 2'b10)begin
 		      case(DMSel)
 				    `Word: m_data_byteen <= 4'b1111;
 					 `Half: begin

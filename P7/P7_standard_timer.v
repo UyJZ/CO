@@ -4,17 +4,22 @@
 `define CNT  2'b10
 `define INT  2'b11
 
-`define ctrl   mem[0]
-`define preset mem[1]
-`define count  mem[2]
+`define ctrl   mem[0]//控制寄存器
+`define preset mem[1]//初值寄存器
+`define count  mem[2]//计数值寄存器
+/*
+when(`ctrl[3] == 1)允许中断，反之不允许
+ctrl[2:1] Mode
+ctrl[0] 是否允许计数
+*/
 module TC(
     input clk,
     input reset,
-    input [31:2] Addr,
+    input [31:0] Addr,
     input WE,
     input [31:0] Din,
     output [31:0] Dout,
-    output IRQ
+    output IRQ//中断请求
     );
 
 	reg [1:0] state;
